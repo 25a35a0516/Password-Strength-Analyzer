@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Password Strength Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgb(243, 244, 245);
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 350px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            outline: none;
+            font-size: 14px;
+        }
+
+        input:focus {
+            border-color: #667eea;
+        }
+
+        .toggle {
+            position: absolute;
+            right: 10px;
+            top: 12px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #667eea;
+        }
+
+        .bar {
+            height: 8px;
+            width: 100%;
+            background: #eee;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .strength {
+            height: 100%;
+            width: 0%;
+            transition: 0.4s;
+        }
+
+        .weak { width: 33%; background: #ff4d4d; }
+        .medium { width: 66%; background: #ffa500; }
+        .strong { width: 100%; background: #28a745; }
+
+        #strengthText {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            text-align: left;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        .ok { color: green; }
+        .fail { color: red; }
+
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>🔐 Password Analyzer</h2>
+
+    <div class="input-group">
+        <input type="password" id="password" placeholder="Enter password" onkeyup="checkStrength()">
+        <span class="toggle" onclick="togglePassword()">Show</span>
+    </div>
+
+    <div class="bar">
+        <div id="strengthBar" class="strength"></div>
+    </div>
+
+    <p id="strengthText"></p>
+
+    <ul>
+        <li id="length" class="fail">At least 8 characters</li>
+        <li id="upper" class="fail">Uppercase letter</li>
+        <li id="lower" class="fail">Lowercase letter</li>
+        <li id="number" class="fail">Number</li>
+        <li id="special" class="fail">Special character</li>
+    </ul>
+</div>
+
+<script>
+function checkStrength() {
+    let pass = document.getElementById("password").value;
+
+    let length = pass.length >= 8;
+    let upper = /[A-Z]/.test(pass);
+    let lower = /[a-z]/.test(pass);
+    let number = /[0-9]/.test(pass);
+    let special = /[!@#$%^&*]/.test(pass);
+
+    update("length", length);
+    update("upper", upper);
+    update("lower", lower);
+    update("number", number);
+    update("special", special);
+
+    let score = [length, upper, lower, number, special].filter(Boolean).length;
+
+    let bar = document.getElementById("strengthBar");
+    let text = document.getElementById("strengthText");
+
+    bar.className = "strength";
+
+    if (score <= 2) {
+        bar.classList.add("weak");
+        text.innerText = "Weak Password";
+        text.style.color = "#ff4d4d";
+    } 
+    else if (score <= 4) {
+        bar.classList.add("medium");
+        text.innerText = "Medium Password";
+        text.style.color = "#ffa500";
+    } 
+    else {
+        bar.classList.add("strong");
+        text.innerText = "Strong Password";
+        text.style.color = "#28a745";
+    }
+}
+
+function update(id, condition) {
+    let el = document.getElementById(id);
+    el.className = condition ? "ok" : "fail";
+}
+
+function togglePassword() {
+    let input = document.getElementById("password");
+    let toggle = document.querySelector(".toggle");
+
+    if (input.type === "password") {
+        input.type = "text";
+        toggle.innerText = "Hide";
+    } else {
+        input.type = "password";
+        toggle.innerText = "Show";
+    }
+}
+</script>
+
+</body>
+</html>
